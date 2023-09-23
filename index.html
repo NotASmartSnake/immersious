@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>immersious</title>
+    <link href="style.css" rel="stylesheet" />
+</head>
+<body>
+    <input type="file" id="videoInput" onclick="grabFile()" class="hidden">
+    <button id="streaming" class="hidden"></button>
+    <div id="loadVideo">
+        <h1>Load Video:</h1>
+        <p>
+            Press the button below to upload a file.
+        </p>
+        <label for="videoInput" id="videoInputButton">Browse Local Files</label>
+    </div>
+    
+    <video id="player"></video>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <script>
+        const vidInput = document.getElementById("videoInput");
+        let currentPlayer = null;
+
+        class VideoPlayer {
+            #player = document.getElementById("player");
+
+            constructor(videoURL) {
+                this.openVideo(videoURL);
+                document.getElementById("loadVideo").hidden = true;
+            }
+
+            openVideo(url) {
+                this.#player.src = url;
+                this.#player.load();
+            }
+
+            play() {
+                this.#player.play();
+            }
+        }
+
+        function grabFile() {
+            vidInput.type = "file";
+            vidInput.accept = "video/*";
+            
+            vidInput.onchange = e => {
+                let file = vidInput.files[0];
+                let fileURL = window.URL.createObjectURL(file);
+
+                currentPlayer = new VideoPlayer(fileURL)
+            }
+        }
+        
+    </script>
+</body>
+</html>
