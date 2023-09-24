@@ -1,5 +1,4 @@
 const vidInput = document.getElementById("videoInput");
-        let listener = null;
 
         class VideoPlayer {
             player = document.getElementById("player");
@@ -8,7 +7,6 @@ const vidInput = document.getElementById("videoInput");
             constructor(videoURL) {
                 this.openVideo(videoURL);
                 document.getElementById("loadVideo").hidden = true;
-                listener = new InputListener(this);
             }
 
             openVideo(url) {
@@ -65,33 +63,23 @@ const vidInput = document.getElementById("videoInput");
         class InputListener {
             #startTime;
             #elapsedTime;
-            #startFingerPosition = [0, 0];
-            #videoPlayer;
+            #fingerPosition = [0, 0];
 
-            constructor(videoPlayer) {
-                this.#videoPlayer = videoPlayer
-                this.inputHappened = new CustomEvent("inputhappened");
+            constructor() {
                 this.queue = new InputQueue();
-                videoPlayer.player.addEventListener("touchstart", (e) => {
-                    listener.touchStart(e);
-                });
-                videoPlayer.player.addEventListener("touchend", () => {
-                    listener.touchEnd();
-                });
             }
 
             touchStart(e) {
-                this.#startFingerPosition[0] = e.touches[0].clientX;
-                this.#startFingerPosition[1] = e.touches[0].clientY;
+                this.#fingerPosition[0] = e.touches[0].clientX;
+                this.#fingerPosition[1] = e.touches[0].clientY;
                 this.#startTime = new Date().getTime();
             }
 
             touchEnd() {
                 this.#elapsedTime = this.#startTime - new Date().getTime();
-                this.#videoPlayer.manageInputs(this.getFingerMovement());
             }
 
-            getFingerMovement() {
+            getInputType() {
                 if (this.#elapsedTime > 500) {
                     return null;
                 }
@@ -99,6 +87,17 @@ const vidInput = document.getElementById("videoInput");
                 this.queue.addInput()
                 return this.queue.getInput();
             }
+        }
+
+        function handleVideoPlayer(videoPlayer) {
+            listener = new InputListener();
+            videoPlayer.player.addEventListener("touchstart", (e) => {
+                listener.touchStart(e);
+            });
+            videoPlayer.player.addEventListener("touchend", () => {
+                listener.touchEnd();
+                videoPlayer.manageInputs(listener.getInputType())
+            });
         }
 
         function grabFile() {
@@ -110,5 +109,6 @@ const vidInput = document.getElementById("videoInput");
                 let fileURL = window.URL.createObjectURL(file);
 
                 currentPlayer = new VideoPlayer(fileURL);
+                handleVideoPlayer(currentPlayer)
             }
         }
