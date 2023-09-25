@@ -127,12 +127,12 @@ class VideoPlayer {
         // call manageVideo function when video has loaded
         this.player.addEventListener("durationchange", () => {
             this.manageVideo();
-        })
+        });
     }
 
     manageVideo() {
-        let progressBar = new ProgressBar(this.player.duration);
-        let progressTime = new ProgressTime(this.player.duration);
+        const progressBar = new ProgressBar(this.player.duration);
+        const progressTime = new ProgressTime(this.player.duration);
 
         // update the time if the progress bar is changed
         progressBar.element.addEventListener("input", (e) => {
@@ -147,19 +147,6 @@ class VideoPlayer {
                 progressTime.updateDisplay(Math.floor(this.player.currentTime))
             }
         });
-    }
-
-    changeTrack(currentTrack) {
-        try {
-            let audioTracks = this.player.audioTracks;
-            audioTracks[currentTrack].enabled = false;
-            audioTracks[currentTrack + 1].enabled = true;
-            return currentTrack + 1;
-        }
-        catch (error) {
-            console.log("not avaliable on this browser");
-            console.log(error)
-        }
     }
 
     openVideo(url) {
@@ -207,8 +194,6 @@ class VideoPlayer {
 
 function handleEvents(videoPlayer) {
     listener = new InputListener();
-    let audioTracks = new PauseMenuElement(document.getElementById("audioTrack"));
-    let currentTrack = 0;
 
     // call to the InputListener when an input has occured on the video player
     videoPlayer.player.addEventListener("touchstart", (e) => {
@@ -231,10 +216,6 @@ function handleEvents(videoPlayer) {
         for(let i = 0; i < PauseMenuElements.length; i++) {
             PauseMenuElements[i].hide();
         }
-    });
-
-    audioTracks.element.addEventListener("click", () => {
-        currentTrack = videoPlayer.changeTrack(currentTrack);
     });
 }
 
