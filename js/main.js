@@ -149,6 +149,19 @@ class VideoPlayer {
         });
     }
 
+    changeTrack(currentTrack) {
+        try {
+            let audioTracks = this.player.audioTracks;
+            audioTracks[currentTrack].enabled = false;
+            audioTracks[currentTrack + 1].enabled = true;
+            return currentTrack + 1;
+        }
+        catch (error) {
+            console.log("not avaliable on this browser");
+            console.log(error)
+        }
+    }
+
     openVideo(url) {
         this.player.src = url;
         this.player.load();
@@ -194,6 +207,8 @@ class VideoPlayer {
 
 function handleEvents(videoPlayer) {
     listener = new InputListener();
+    let audioTracks = new PauseMenuElement(document.getElementById("audioTrack"));
+    let currentTrack = 0;
 
     // call to the InputListener when an input has occured on the video player
     videoPlayer.player.addEventListener("touchstart", (e) => {
@@ -211,12 +226,16 @@ function handleEvents(videoPlayer) {
         for(let i = 0; i < PauseMenuElements.length; i++) {
             PauseMenuElements[i].show();
         }
-    })
+    });
     videoPlayer.player.addEventListener("play", () => {
         for(let i = 0; i < PauseMenuElements.length; i++) {
             PauseMenuElements[i].hide();
         }
-    })
+    });
+
+    audioTracks.element.addEventListener("click", () => {
+        currentTrack = videoPlayer.changeTrack(currentTrack);
+    });
 }
 
 function grabFile() {
