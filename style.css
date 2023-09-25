@@ -12,10 +12,6 @@ body {
     padding: 0;
 }
 
-.hidden {
-    visibility: hidden;
-}
-
 #loadVideo {
     position: absolute;
     width: 500px;
@@ -63,4 +59,65 @@ body {
     top: 0;
     bottom: 0;
     margin: auto;
+}
+
+#progress {
+    position: absolute;
+    bottom: 2vh;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+
+    -webkit-appearance: none;
+    appearance: none; 
+    width: 100%;
+    cursor: pointer;
+    outline: none;
+    overflow: hidden;
+    border-radius: 16px;
+}
+
+#progress::-webkit-slider-runnable-track {
+    height: 15px;
+    background: #ccc;
+    border-radius: 16px;
+}
+
+#progress::-moz-range-track {
+    height: 15px;
+    background: #ccc;
+    border-radius: 16px;
+}
+
+#progress::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none; 
+    height: 15px;
+    width: 15px;
+    background-color: #ff0000;
+    border-radius: 50%;
+    border: 0px;
+    box-shadow: -407px 0 0 400px rgb(255, 0, 0);
+}
+
+#progress::-moz-range-thumb {
+    -webkit-appearance: none;
+    appearance: none; 
+    height: 15px;
+    width: 15px;
+    background-color: #fff;
+    border-radius: 50%;
+    border: 2px solid rgb(255, 0, 0);
+    box-shadow: -407px 0 0 400px rgb(255, 0, 0);
+}
+
+#progressTime {
+    position: absolute;
+    bottom: 5vh;
+    right: 2vh;
+    font-family: "Noto Sans JP";
+    font-size: 6vh;
+    -webkit-text-stroke-color: #000000;
+    -webkit-text-stroke-width: 1px;
+    color: #FFFFFF;
 }

@@ -5,7 +5,7 @@
     <title>immersious</title>
     <link href="style.css" rel="stylesheet" />
 </head>
-<body>
+<body onload="websiteLoaded()">
     <input type="file" id="videoInput" onclick="grabFile()" class="hidden">
     <div id="loadVideo">
         <h1>Load Video:</h1>
@@ -16,7 +16,8 @@
     </div>
     
     <video id="player"></video>
-    <input type="range" min="0" value="0" id="progress">
+    <input type="range" min="0" value="0" id="progress" class="hidden">
+    <p id="progressTime" class="hidden"></p>
 
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
     <script src="js/main.js"></script>
