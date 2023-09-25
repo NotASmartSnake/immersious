@@ -1,4 +1,4 @@
-let PauseMenuElements = []
+let pauseMenuElements = []
 
 class InputQueue {
     #inputs = 0;
@@ -59,7 +59,7 @@ class InputListener {
 class PauseMenuElement {
     constructor(element) {
         this.element = element;
-        PauseMenuElements.push(this);
+        pauseMenuElements.push(this);
         this.element.hidden = false;
     }
     
@@ -194,6 +194,7 @@ class VideoPlayer {
 
 function handleEvents(videoPlayer) {
     listener = new InputListener();
+    subtitleButton = new PauseMenuElement(document.getElementById("subtitleButton"));
 
     // call to the InputListener when an input has occured on the video player
     videoPlayer.player.addEventListener("touchstart", (e) => {
@@ -208,21 +209,34 @@ function handleEvents(videoPlayer) {
 
     // control what happens on pausing and playing
     videoPlayer.player.addEventListener("pause", () => {
-        for(let i = 0; i < PauseMenuElements.length; i++) {
-            PauseMenuElements[i].show();
+        for(let i = 0; i < pauseMenuElements.length; i++) {
+            pauseMenuElements[i].show();
         }
     });
     videoPlayer.player.addEventListener("play", () => {
-        for(let i = 0; i < PauseMenuElements.length; i++) {
-            PauseMenuElements[i].hide();
+        for(let i = 0; i < pauseMenuElements.length; i++) {
+            pauseMenuElements[i].hide();
         }
     });
+}
+
+function loadSubtitles() {
+    const subInput = document.getElementById("subtitleButton");
+
+    subInput.onchange = () => {
+        const file = subInput.files[0];
+        const reader = new FileReader();
+        reader.readAsText(file);
+        
+        reader.addEventListener("load", () => {
+            console.log(reader.result);
+        });
+    }
 }
 
 function grabFile() {
     // user picks a file with the input element
     const vidInput = document.getElementById("videoInput");
-    vidInput.type = "file";
     
     // when the file has loaded
     vidInput.onchange = () => {
