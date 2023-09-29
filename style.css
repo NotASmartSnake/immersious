@@ -6,7 +6,7 @@ h1, p {
 
 body {
     overflow: hidden;
-    background-image: linear-gradient(to right bottom, #ffffff, #f9f5ff, #f8e9ff, #fadcfd, #ffcff6);    background-size: 100vw 100vh;
+    background-color: #000000;
     background-repeat: no-repeat;
     margin: 0;
     padding: 0;
@@ -119,5 +119,25 @@ body {
     font-size: 6vh;
     -webkit-text-stroke-color: #000000;
     -webkit-text-stroke-width: 1px;
+    color: #FFFFFF;
+}
+
+#subtitleArea {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 15vh;
+    margin: auto 0;
+    text-align: center;
+}
+
+#subtitleArea p {
+    display: inline-block;
+    font-size: 3vw;
+    background-color: #00000083;
+    color: #FFFFFF;
+}
+
+#subtitleButton {
     color: #FFFFFF;
 }

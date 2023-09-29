@@ -121,8 +121,11 @@ class Subtitle {
     display() {
         this.element = document.createElement("p");
         this.element.textContent = this.text;
+
         this.showing = true;
-        document.getElementById("subtitleArea").appendChild(this.element);
+
+        let subtitleArea = document.getElementById("subtitleArea");
+        subtitleArea.appendChild(this.element);
     }
 
     destroy() {
@@ -190,7 +193,6 @@ class SubtileManager {
 
             const sub = new Subtitle(text);
             sub.prepare(start, end, VideoPlayer.player);
-
         }
     }
 
