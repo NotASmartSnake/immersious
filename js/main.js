@@ -112,20 +112,63 @@ class ProgressBar extends PauseMenuElement {
 }
 
 class Subtitle {
-    constructor(text, start, end) {
+    showing = false;
+
+    constructor(text) {
         this.text = text;
-        this.start = start;
-        this.end = end;
+    }
+
+    display() {
+        this.element = document.createElement("p");
+        this.element.textContent = this.text;
+        this.showing = true;
+        document.getElementById("subtitleArea").appendChild(this.element);
+    }
+
+    destroy() {
+        this.element.remove();
+        this.showing = false;
+    }
+
+    prepare(start, end, videoPlayer) {
+        videoPlayer.addEventListener("timeupdate", e => {
+            let miliseconds = Math.round(e.target.currentTime * 1000);
+
+            if (miliseconds >= start && miliseconds < end) {
+                if (this.showing == false) {
+                    console.log("show");
+                    this.display();
+                }
+            }
+
+            if (miliseconds >= end && this.showing) {
+                console.log("hide");
+                this.destroy();
+            }
+        })
     }
 }
 
 class SubtileManager {
 
-    static videoPlayer;
-
     constructor(textRaw, extension) {
         this.textRaw = textRaw;
         this.extension = extension;
+    }
+
+    convertToMiliseconds(time) {
+        let timesStr = time.split(/[:.,]/);
+        if (timesStr[3].length == 2) {
+            timesStr[3] += "0";
+        }
+
+        let times = []
+        for (let i = 0; i < timesStr.length; i++) {
+            times.push(Number(timesStr[i]));
+        }
+
+        const totalMiliseconds = times[0] * 3600000 + times[1] * 60000 + times[2] * 1000 + times[3];
+        return totalMiliseconds;
     }
 
     decodeASS() {
@@ -134,9 +177,14 @@ class SubtileManager {
         const firstSubtitleLine = lines.indexOf("\n[Events]") + 2;
 
         for (let i = firstSubtitleLine; i < lines.length; i++) {
-            const [, start, end, , , , , , , text] = lines[i].split(",");
+            let [, start, end, , , , , , , text] = lines[i].split(",");
 
-            new Subtitle(text, start, end);
+            start = this.convertToMiliseconds(start);
+            end = this.convertToMiliseconds(end);
+
+            const sub = new Subtitle(text);
+            sub.prepare(start, end, VideoPlayer.player);
+
         }
     }
 
@@ -146,10 +194,15 @@ class SubtileManager {
         for (let i = 0; i < lines.length; i++) {
             const splitLine = lines[i].split("\n");
             const timing = splitLine[1];
-            const [start, end] = timing.split(" --> ");
+            let [start, end] = timing.split(" --> ");
+
+            start = this.convertToMiliseconds(start);
+            end = this.convertToMiliseconds(end);
+
             const text = splitLine.filter(a => a != timing && a != i + 1).join("\n");
 
-            new Subtitle(text, start, end);
+            const sub = new Subtitle(text);
+            sub.prepare(start, end, VideoPlayer.player);
         }
     }
 
@@ -164,16 +217,17 @@ class SubtileManager {
         else {
             console.log("Only SRT and ASS files supported")
         }
+        
     }
 }
 
 class VideoPlayer {
-    player = document.getElementById("player");
+    static player = document.getElementById("player");
     #isPlaying = false;
 
     manageVideo() {
-        const progressBar = new ProgressBar(this.player.duration);
-        const progressTime = new ProgressTime(this.player.duration);
+        const progressBar = new ProgressBar(player.duration);
+        const progressTime = new ProgressTime(player.duration);
         const listener = new InputListener(this);
         new PauseMenuElement(document.getElementById("subtitleButton"));
 
@@ -181,24 +235,24 @@ class VideoPlayer {
         progressBar.element.addEventListener("input", (e) => {
             progressBar.setCurrentTime(e.target.value);
             progressTime.updateDisplay(e.target.value);
-            this.player.currentTime = e.target.value;
+            player.currentTime = e.target.value;
         })
 
         // update the progress bar if needed
-        this.player.addEventListener("timeupdate", () => {
-            if (this.player.currentTime > progressBar.getCurrentTime()) {
-                progressBar.setCurrentTime(Math.floor(this.player.currentTime));
-                progressTime.updateDisplay(Math.floor(this.player.currentTime))
+        player.addEventListener("timeupdate", () => {
+            if (player.currentTime > progressBar.getCurrentTime()) {
+                progressBar.setCurrentTime(Math.floor(player.currentTime));
+                progressTime.updateDisplay(Math.floor(player.currentTime))
             }
         });
 
         // call to the InputListener when an input has occured on the video player
-        this.player.addEventListener("touchstart", (e) => {
+        player.addEventListener("touchstart", (e) => {
             listener.touchStart(e);
         });
 
         // manage the input once the input has ended
-        this.player.addEventListener("touchend", () => {
+        player.addEventListener("touchend", () => {
             listener.touchEnd();
 
             // get input type from the listener and process them in the video player
@@ -206,14 +260,14 @@ class VideoPlayer {
         });
 
         // show pause menu when paused
-        this.player.addEventListener("pause", () => {
+        player.addEventListener("pause", () => {
             for(let i = 0; i < pauseMenuElements.length; i++) {
                 pauseMenuElements[i].show();
             }
         });
 
         // hide pause menu when unpaused
-        this.player.addEventListener("play", () => {
+        player.addEventListener("play", () => {
             for(let i = 0; i < pauseMenuElements.length; i++) {
                 pauseMenuElements[i].hide();
             }
@@ -222,29 +276,27 @@ class VideoPlayer {
 
     openVideo(url) {
         document.getElementById("loadVideo").hidden = true;
-        this.player.src = url;
-        this.player.load();
-
-        SubtileManager.videoPlayer = this;
+        player.src = url;
+        player.load();
 
         // call manageVideo function when video has loaded
-        this.player.addEventListener("durationchange", () => {
+        player.addEventListener("durationchange", () => {
             this.manageVideo();
         });
     }
 
     play() {
         this.#isPlaying = true;
-        this.player.play();
+        player.play();
     }
 
     pause() {
         this.#isPlaying = false;
-        this.player.pause();
+        player.pause();
     }
 
     skim(seconds) {
-        this.player.currentTime += seconds;
+        player.currentTime += seconds;
         this.play();
     }
 
@@ -260,7 +312,7 @@ class VideoPlayer {
                 break;
 
             case "doubleTap":
-                if (fingerPosition[0] >= this.player.clientWidth / 2) {
+                if (fingerPosition[0] >= player.clientWidth / 2) {
                     this.skim(5);
                 } else {
                     this.skim(-5);
