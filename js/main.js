@@ -136,14 +136,12 @@ class Subtitle {
 
             if (miliseconds >= start && miliseconds < end) {
                 if (this.showing == false) {
-                    console.log("show");
                     this.display();
                 }
             }
 
             if (miliseconds >= end || miliseconds < start) {
                 if (this.showing) {
-                    console.log("hide");
                     this.destroy();
                 }
             }
@@ -176,7 +174,6 @@ class SubtileManager {
     removeXML(xmlText) {
         const parser = new DOMParser();
         const doc = parser.parseFromString(xmlText, "text/xml");
-        console.log(doc);
         return doc.documentElement.textContent;
     }
 
