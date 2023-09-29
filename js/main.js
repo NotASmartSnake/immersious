@@ -141,9 +141,11 @@ class Subtitle {
                 }
             }
 
-            if (miliseconds >= end && this.showing) {
-                console.log("hide");
-                this.destroy();
+            if (miliseconds >= end || miliseconds < start) {
+                if (this.showing) {
+                    console.log("hide");
+                    this.destroy();
+                }
             }
         })
     }
@@ -152,7 +154,7 @@ class Subtitle {
 class SubtileManager {
 
     constructor(textRaw, extension) {
-        this.textRaw = textRaw;
+        this.textRaw = textRaw.replaceAll("\r", "");
         this.extension = extension;
     }
 
@@ -171,10 +173,17 @@ class SubtileManager {
         return totalMiliseconds;
     }
 
+    removeXML(xmlText) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(xmlText, "text/xml");
+        console.log(doc);
+        return doc.documentElement.textContent;
+    }
+
     decodeASS() {
         // I know it's gross, just don't look.
-        const lines = this.textRaw.split("\r");
-        const firstSubtitleLine = lines.indexOf("\n[Events]") + 2;
+        const lines = this.textRaw.split("\n");
+        const firstSubtitleLine = lines.indexOf("[Events]") + 2;
 
         for (let i = firstSubtitleLine; i < lines.length; i++) {
             let [, start, end, , , , , , , text] = lines[i].split(",");
@@ -191,6 +200,7 @@ class SubtileManager {
     decodeSRT() {
         // I know it's gross, just don't look.
         const lines = this.textRaw.split("\n\n").filter(a => a != "");
+        console.log(lines);
         for (let i = 0; i < lines.length; i++) {
             const splitLine = lines[i].split("\n");
             const timing = splitLine[1];
@@ -199,7 +209,8 @@ class SubtileManager {
             start = this.convertToMiliseconds(start);
             end = this.convertToMiliseconds(end);
 
-            const text = splitLine.filter(a => a != timing && a != i + 1).join("\n");
+            let text = splitLine.filter(a => a != timing && a != i + 1).join("\n");
+            text = this.removeXML(text);
 
             const sub = new Subtitle(text);
             sub.prepare(start, end, VideoPlayer.player);
