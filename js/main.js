@@ -171,10 +171,10 @@ class SubtileManager {
         return totalMiliseconds;
     }
 
-    removeXML(xmlText) {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(xmlText, "text/xml");
-        return doc.documentElement.textContent;
+    stripTags(textTag) {
+        // regex removes all tags from a string
+        const text = textTag.replace(/<\/?[^>]+(>|$)/g, "");
+        return text;
     }
 
     decodeASS() {
@@ -197,7 +197,6 @@ class SubtileManager {
     decodeSRT() {
         // I know it's gross, just don't look.
         const lines = this.textRaw.split("\n\n").filter(a => a != "");
-        console.log(lines);
         for (let i = 0; i < lines.length; i++) {
             const splitLine = lines[i].split("\n");
             const timing = splitLine[1];
@@ -207,7 +206,7 @@ class SubtileManager {
             end = this.convertToMiliseconds(end);
 
             let text = splitLine.filter(a => a != timing && a != i + 1).join("\n");
-            text = this.removeXML(text);
+            text = this.stripTags(text);
 
             const sub = new Subtitle(text);
             sub.prepare(start, end, VideoPlayer.player);
@@ -217,7 +216,6 @@ class SubtileManager {
     decodeSubtiles() {
         if (this.extension == "ass") {
             this.decodeASS();
-            console.log("hi");
         }
         else if (this.extension == "srt") {
             this.decodeSRT();
