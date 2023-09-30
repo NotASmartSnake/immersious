@@ -5,7 +5,7 @@ This means that it can be used in conjunction with 10ten reader to quickly scan 
 
 # Usage Instructions
 Immersing with immersious couldn't be easier (actually no, it probably could, just use android), here are some simple steps you can follow:
-- First, go to [notasmartsnake.github.io/immersious](notasmartsnake.github.io/immersious),
+- First, go to [notasmartsnake.github.io/immersious](https://notasmartsnake.github.io/immersious/),
 - Upload a video file, pretty sure ios doesn't support mkv though because it SUCKS!!
 - An interface will show up when the video is paused, in the top left of this interface, there is a button you can use to import a subtitle file, both srt and ass are supported.
 - Watch anime! Have a good day.
