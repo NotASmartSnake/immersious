@@ -142,3 +142,15 @@ body {
 #subtitleButton {
     color: #FFFFFF;
 }
+
+#offsetButtons {
+    position: absolute;
+    display: flex;
+    justify-content: space-between;
+    right: 0;
+    top: 0;
+}
+
+#newOffsetDisplay p{
+    color: #FFFFFF;
+}

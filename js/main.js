@@ -113,6 +113,7 @@ class ProgressBar extends PauseMenuElement {
 
 class Subtitle {
     showing = false;
+    static offset = 0;
 
     constructor(text) {
         this.text = text;
@@ -136,14 +137,13 @@ class Subtitle {
     prepare(start, end, videoPlayer) {
         videoPlayer.addEventListener("timeupdate", e => {
             let miliseconds = Math.round(e.target.currentTime * 1000);
-
-            if (miliseconds >= start && miliseconds < end) {
+            if (miliseconds >= (start + Subtitle.offset) && miliseconds < (end + Subtitle.offset)) {
                 if (this.showing == false) {
                     this.display();
                 }
             }
 
-            if (miliseconds >= end || miliseconds < start) {
+            if (miliseconds >= (end + Subtitle.offset) || miliseconds < (start + Subtitle.offset)) {
                 if (this.showing) {
                     this.destroy();
                 }
@@ -152,11 +152,39 @@ class Subtitle {
     }
 }
 
+class SubOffsetButton extends PauseMenuElement {
+    constructor(element, offset) {
+        super(element);
+        this.offset = offset;
+    }
+
+    listenForInputs() {
+        this.element.addEventListener("click", () => {
+            Subtitle.offset += this.offset;
+            console.log(Subtitle.offset);
+            
+            const offsetDisplay = document.getElementById("offsetText");
+            const currentText = offsetDisplay.textContent;
+            offsetDisplay.textContent = `new offset: ${Subtitle.offset}`
+
+            if (currentText == "") {
+                setTimeout(() => {
+                    offsetDisplay.textContent = ""
+                }, 2000);
+            }
+        });
+    }
+}
+
 class SubtileManager {
+    offsetPlus = new SubOffsetButton(document.getElementById("offsetPlus"), 100);
+    offsetMinus = new SubOffsetButton(document.getElementById("offsetMinus"), -100);
 
     constructor(textRaw, extension) {
         this.textRaw = textRaw.replaceAll("\r", "");
         this.extension = extension;
+        this.offsetPlus.listenForInputs();
+        this.offsetMinus.listenForInputs();
     }
 
     convertToMiliseconds(time) {

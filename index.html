@@ -20,8 +20,19 @@
     <div id="subtitleArea"></div>
 
     <input type="range" min="0" value="0" id="progress" class="hidden">
+
     <p id="progressTime" class="hidden"></p>
+
     <input type="file" id="subtitleButton" onclick="loadSubtitles()" class="hidden">
+    
+    <div id="offsetButtons">
+        <button id="offsetMinus" class="hidden">-100ms</button>
+        <button id="offsetPlus" class="hidden">+100ms</button>
+    </div>
+
+    <div id="newOffsetDisplay">
+        <p id="offsetText"></p>
+    </div>
     
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
     <script src="js/main.js"></script>
